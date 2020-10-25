@@ -145,7 +145,7 @@
 
 <script>
 export default {
-  name: 'Users',
+  name: 'Register',
   data() {
     return {
       input: {
