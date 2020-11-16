@@ -5,7 +5,7 @@
       <v-col align="center" justify="center">
         <v-container fluid>
         <v-card
-            v-for="n in questions"
+            v-for="(n, index) in questions"
             :key="n.question.text"
             max-width="600"
             class="pa-md-4 mx-lg-auto"
@@ -17,11 +17,20 @@
                 v-for="a in n.question.answers"
                 :key="a.text"
                 :label="a.text"
+                @change="count(index, a.val)"
             ></v-radio>
           </v-radio-group>
           </v-card-actions>
         </v-card>
         </v-container>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col align="center" justify="center">
+        <v-btn
+            @click="submit">
+            Submit
+        </v-btn>
       </v-col>
     </v-row>
   </div>
@@ -153,22 +162,20 @@ export default {
     }
   },
   methods: {
-
+    count: function (index, value){
+      alert("for question" + index + "your answer value is" + value)
+    },
     submit() {
+      let nums = ('1', '2', '3', '4', '5'),
+          num = 0;
+
+      for (let i = 0; i < nums.length; i++) {
+        num += +nums[i];
+      }
+      document.write("Total:" + num);
       const self = this;
 
-      fetch('https://localhost:44372/register', {
-        method: 'post',
-        headers: new Headers({'content-type': 'application/json'}),
-        body: JSON.stringify(this.input)
-      }).then(function (response) {
-        if (!response.ok) {
-          throw Error(response.statusText)
-        }
-        self.$router.push('/home');
-      }).catch(function(error) {
-        console.log(error);
-      });
+      self.$router.push('/results');
     },
   }
 }
