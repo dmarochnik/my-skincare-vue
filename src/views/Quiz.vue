@@ -3,21 +3,25 @@
     <h1>My Skincare Quiz</h1>
     <v-row>
       <v-col align="center" justify="center">
-        <v-container fluid>
+        <h2 v-if="loading">Loading</h2>
+        <v-container
+            v-if="answers"
+            fluid
+        >
         <v-card
             v-for="(n, index) in questions"
-            :key="n.question.text"
+            :key="n.question"
             max-width="600"
             class="pa-md-4 mx-lg-auto"
         >
-        <v-card-title>{{n.question.text}}</v-card-title>
+        <v-card-title>{{n.question}}</v-card-title>
           <v-card-actions>
           <v-radio-group>
             <v-radio
-                v-for="a in n.question.answers"
-                :key="a.text"
-                :label="a.text"
-                @change="count(index, a.val)"
+                v-for="a in n.answers"
+                :key="a.answer"
+                :label="a.answer"
+                @change="count(index, a.value)"
             ></v-radio>
           </v-radio-group>
           </v-card-actions>
@@ -42,141 +46,80 @@ export default {
   data() {
     return {
       answers: [0,0,0,0,0],
-      questions: [
-        {
-          question: {
-            text: "1. How would you describe your skin?",
-            answers: [
-              {
-                text: "Oily",
-                val: 1
-              },
-              {
-                text: "Dry",
-                val: 2
-              },
-              {
-                text: "Sensitive",
-                val: 3
-              },
-              {
-                text: "Aging",
-                val: 4
-              }
-            ]
-          },
-        },
-        {
-          question: {
-            text: "2. What is your number one skin goal?",
-            answers: [
-              {
-                text: "Get rid of blemishes and blackheads",
-                val: 1
-              },
-              {
-                text: "Get rid of flaky, dry skin",
-                val: 2
-              },
-              {
-                text: "Find products that don't irritate my skin",
-                val: 3
-              },
-              {
-                text: "Reduce fine lines and wrinkles",
-                val: 4
-              }
-            ]
-          },
-        },
-        {
-          question: {
-            text: "3. Which of the following is most important to you?",
-            answers: [
-              {
-                text: "Keeping my skincare routine short and simple.",
-                val: 10
-              },
-              {
-                text: "I need my skincare routine to be inexpensive.",
-                val: 10
-              },
-              {
-                text: "I want the latest, top of the line products.",
-                val: 20
-              },
-              {
-                text: "Finding the right combination of products, even if it means spending extra time on my routine.",
-                val: 20
-              },
-            ]
-          },
-        },
-        {
-          question: {
-            text: "4. How old are you?",
-            answers: [
-              {
-                text: "18-24",
-                val: 1
-              },
-              {
-                text: "25-34",
-                val: 1
-              },
-              {
-                text: "35-44",
-                val: 4
-              },
-              {
-                text: "44+",
-                val: 4
-              }
-            ]
-          },
-        },
-        {
-          question: {
-            text: "5. Which of the following brands do you prefer?",
-            answers: [
-              {
-                text: "Neutrogena",
-                val: 10
-              },
-              {
-                text: "Proactiv",
-                val: 10
-              },
-              {
-                text: "Murad",
-                val: 20
-              },
-              {
-                text: "Clinique",
-                val: 20
-              }
-            ]
-          },
-        }
-      ]
+      questions: null,
+      loading: false
     }
   },
+  created () {
+    // fetch the data when the view is created and the data is
+    // already being observed
+    this.fetchQuiz()
+  },
   methods: {
-    count: function (index, value){
-      alert("for question" + index + "your answer value is" + value)
+    fetchQuiz() {
+      const self = this;
+      this.loading = true;
+      fetch('https://localhost:44372/quiz', {
+        method: 'get',
+      }).then(response => response.json())
+      .then(function (data) {
+        self.questions = data;
+        self.loading = false;
+      }).catch(function (error) {
+        console.log(error);
+        self.loading = false;
+      });
+    },
+    count: function (index, value) {
+      this.answers[index] = value;
     },
     submit() {
-      let nums = ('1', '2', '3', '4', '5'),
-          num = 0;
-
-      for (let i = 0; i < nums.length; i++) {
-        num += +nums[i];
+      let sum = 0;  // Variable to hold numbers as you add them up
+      if (this.answers.includes(0)) {
+        alert("Please answer all questions");
+        return;
       }
-      document.write("Total:" + num);
-      const self = this;
-
-      self.$router.push('/results');
-    },
+      for (let i = 0; i < this.answers.length; i++) {
+        sum += this.answers[i];  // Iterate through the array and take sum and add value of the index
+        //for(let i = 0; i < this.answers.length; i++){
+      }
+        if (sum < 24) {
+          this.skintype = "oily affordable"
+        } else if (sum < 26) {
+          this.skintype = "dry affordable"
+        } else if (sum < 28) {
+          this.skintype = "sensitive affordable"
+        } else if (sum < 33) {
+          this.skintype = "mature affordable"
+        } else if (sum < 43) {
+          this.skintype = "oily expensive"
+        } else if (sum < 45) {
+          this.skintype = "dry expensive"
+        } else if (sum < 48) {
+          this.skintype = "sensitive expensive"
+        } else if (sum < 55) {
+          this.skintype = "mature expensive"
+        }
+      this.$router.push({name: 'Results', params: {results: this.skintype + " " + sum.toString()}});
+    }
+    //submit() {
+    // if(sum < 24)
+    //   document.write("Results:" + sum + "Oily Affordable");
+    // else if(sum < 26)
+    //   document.write("Results:" + sum + "Dry Affordable");
+    // else if(sum < 28)
+    //   document.write("Results:" + sum + "Sensitive Affordable");
+    // else if(sum < 33)
+    //   document.write("Results:" + sum + "Aging Affordable");
+    // else if(sum < 43)
+    //   document.write("Results:" + sum + "Oily Expensive");
+    // else if(sum < 45)
+    //   document.write("Results:" + sum + "Dry Expensive");
+    // else if(sum < 48)
+    //   document.write("Results:" + sum + "Sensitive Expensive");
+    // else if(sum < 55)
+    //   document.write("Results:" + sum + "Aging Expensive");
+    // },
   }
 }
 </script>

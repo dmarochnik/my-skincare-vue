@@ -1,10 +1,17 @@
 <template>
-  <div id="results"></div>
+  <div id="results">
+    <h1>{{test}}</h1>
+  </div>
 </template>
 
 <script>
 export default {
-name: "Results.vue"
+  name: "Results",
+  data() {
+    return {
+      test: this.$attrs.results
+    }
+  }
 }
 </script>
 
