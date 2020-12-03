@@ -6,6 +6,8 @@ import About from '../views/About.vue'
 import Register from '../views/Register.vue'
 import Quiz from '../views/Quiz.vue'
 import Results from '../views/Results.vue'
+import Profile from '../views/Profile.vue'
+import Settings from '../views/Settings'
 
 Vue.use(VueRouter)
 
@@ -40,6 +42,16 @@ const routes = [
     name: 'Results',
     component: Results,
     props: true
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings
   }
 ]
 

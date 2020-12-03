@@ -66,6 +66,14 @@ export default {
     quiz() {
       const self = this;
       self.$router.push('/quiz');
+    },
+    info() {
+      const self = this;
+      self.$router.push('/profile');
+    },
+    settings() {
+      const self = this;
+      self.$router.push('/settings');
     }
   }
 }
